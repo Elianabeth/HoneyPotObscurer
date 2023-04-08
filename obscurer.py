@@ -518,8 +518,8 @@ def cowrie_cfg(cowrie_install_dir):
 		refunc = "(?<=version ).*?(?= \()"
 		uname_kernel = re.findall(refunc, version)
 		replacements = {"svr04": hostname, "#fake_addr = 192.168.66.254": "fake_addr = {0}".format(ip_address),
-		"version = SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2": "version = {0}".format(sshversion), "#listen_port = 2222": "listen_port = 22",
-		"tcp:2222": "tcp:22",
+		"version = SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2": "version = {0}".format(sshversion), "#listen_port = 2222": "listen_port = 2222",
+		"tcp:2222": "tcp:2222",
 		"kernel_version = 3.2.0-4-amd64": "kernel_version = {0}".format(uname_kernel[0]),
 		"kernel_build_string = #1 SMP Debian 3.2.68-1+deb7u1": "kernel_build_string = {0}".format(kernel_build_string)}
 		substrs = sorted(replacements, key=len, reverse=True)
@@ -661,7 +661,7 @@ SSH Version: {4}
 SSH Listen Port: {5}
 Internal IP: {6}
 
-""".format(users, password, hostname, version, sshversion, "22", ip_address)
+""".format(users, password, hostname, version, sshversion, "2222", ip_address)
 
 if __name__ == "__main__":
 	parser = OptionParser(usage='usage: python3 %prog cowrie/install/dir [options]')
