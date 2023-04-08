@@ -58,7 +58,7 @@ class Command_command(HoneyPotCommand):
                     # this needs to go here so it doesn't write it out....
                     if self.input_data:
                         self.writeBytes(self.input_data)
-                    self.exit()
+                    #self.exit()
             #'Faking' verbose output for now
             if vars[0] == '-v' or vars[0] == '-V':
                 # Look up each file
