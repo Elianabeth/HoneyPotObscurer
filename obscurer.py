@@ -11,6 +11,7 @@ from optparse import OptionParser
 import sys
 import os
 import shutil
+import subprocess
 
 SCRIPT_VERSION = "1.0.2"
 
@@ -574,6 +575,27 @@ def userdb(cowrie_install_dir):
 # The following function below  checks whether or not  the fs.pickle file exist in the directory honeyfs/home.
 # If the  file does not exist then the function below creates the "home" directory inside the honeyfs and using the command 'bin/createfs -l../honeyfs -o fs.piickle' to create the pickle file.
 def fs_pickle(cowrie_install_dir):
+# NOTE - has been modified due to weirdness in how this function originally worked.
+def fs_pickle(cowrie_install_dir):
+	print("Modifying fs.pickle file..")
+	prcv = subprocess.run(["git", "-C", "{0}".format(cowrie_install_dir), "restore", "share/cowrie/fs.pickle"],
+								stdout=subprocess.PIPE,
+								universal_newlines=True)
+	print(prcv)
+	prcv = subprocess.Popen(["{0}/bin/fsctl".format(cowrie_install_dir), "{0}/share/cowrie/fs.pickle".format(cowrie_install_dir)],
+				stdin=subprocess.PIPE,
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE,
+				universal_newlines=True,
+				bufsize=0)
+
+	prcv.stdin.write("rm -r /home/phil\n")
+	prcv.stdin.write("exit\n")
+	prcv.stdin.close()
+
+	for line in prcv.stdout:
+		print(line.strip())	
+	"""
 	print ('Creating filesystem.')
 	try:
 		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/home"))
@@ -584,6 +606,7 @@ def fs_pickle(cowrie_install_dir):
 	except FileNotFoundError:
 		pass
 	os.system("{0}/bin/createfs -l {0}/honeyfs -o {0}/share/cowrie/fs.pickle".format(cowrie_install_dir))
+	"""
 # The following function below  executes the installations one at a time
 # In the events of an error, it will prompt a message to check the file path and try again
 def allthethings(cowrie_install_dir):
