@@ -572,9 +572,7 @@ def userdb(cowrie_install_dir):
 				userdb_file.write("\n{0}:x:{1}".format(user,p))
 		userdb_file.truncate()
 		userdb_file.close()
-# The following function below  checks whether or not  the fs.pickle file exist in the directory honeyfs/home.
-# If the  file does not exist then the function below creates the "home" directory inside the honeyfs and using the command 'bin/createfs -l../honeyfs -o fs.piickle' to create the pickle file.
-def fs_pickle(cowrie_install_dir):
+
 # NOTE - has been modified due to weirdness in how this function originally worked.
 def fs_pickle(cowrie_install_dir):
 	print("Modifying fs.pickle file..")
