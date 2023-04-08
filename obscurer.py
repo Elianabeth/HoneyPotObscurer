@@ -12,7 +12,7 @@ import sys
 import os
 import shutil
 
-SCRIPT_VERSION = "1.0.2"
+SCRIPT_VERSION = "1.0.3"
 
 def rand_hex():
 	return '{0}{1}'.format(random.choice('0123456789ABCDEF'), random.choice('0123456789ABCDEF'))
@@ -54,7 +54,7 @@ kernel_build_string = random.choice(kbs)
 
 
 version, uname = random.choice(list(nix_versions.items()))
-processors = ['Intel(R) Core(TM) i7-2960XM CPU @ 2.70GHz', 'Intel(R) Core(TM) i5-4590S CPU @ 3.00GHz',
+processors = ['Intel(R) Core(TM) i7-2670QM CPU @ 2.20GHz', 'Intel(R) Core(TM) i5-4590 CPU @ 3.30GHz',
 			  'Intel(R) Core(TM) i3-4005U CPU @ 1.70GHz']
 cpu_flags = ['rdtscp', 'arch_perfmon', 'nopl', 'xtopology', 'nonstop_tsc', 'aperfmperf', 'eagerfpu', 'pclmulqdq',
 			 'dtes64', 'pdcm', 'pcid',
@@ -92,6 +92,15 @@ ssh_ver = ['SSH-2.0-OpenSSH_5.1p1 Debian-5', 'SSH-1.99-OpenSSH_4.3', 'SSH-1.99-O
 		   'SSH-2.0-OpenSSH_5.3p1 Debian-3ubuntu6', 'SSH-2.0-OpenSSH_5.3p1 Debian-3ubuntu7',
 		   'SSH-2.0-OpenSSH_5.5p1 Debian-6+squeeze2', 'SSH-2.0-OpenSSH_5.9p1 Debian-5ubuntu1',
 		   ' SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u1']
+#Do the OSes need to also be updated for this to work?
+newer_ssh_ver = ['SSH-2.0-OpenSSH_8.8 FreeBSD-20211221', 'SSH-2.0-OpenSSH_8.4p1 Debian-5', 
+		 		 'SSH-2.0-OpenSSH_7.9p1 Debian-10+deb10u2',  'SSH-2.0-OpenSSH_7.9p1 Debian-10+deb10u1',
+				 'SSH-2.0-OpenSSH_7.9p1 Debian-10', 'SSH-2.0-OpenSSH_7.4p1 Debian-10+deb9u6',
+				 'SSH-2.0-OpenSSH_7.4p1 Debian-10+deb9u6', 'SSH-2.0-OpenSSH_7.9 FreeBSD-20200214',
+				 'SSH-2.0-OpenSSH_7.9 FreeBSD-20200214', 'SSH-2.0-OpenSSH_7.9 FreeBSD-20200214',
+				 'SSH-2.0-OpenSSH_8.9p1 Ubuntu-3', 'SSH-2.0-OpenSSH_8.4p1 Ubuntu-6ubuntu2',
+				 'SSH-2.0-OpenSSH_8.4p1 Ubuntu-5ubuntu1', 'SSH-2.0-OpenSSH_8.3p1 Ubuntu-1',
+				 'SSH-2.0-OpenSSH_8.2p1 Ubuntu-4', 'SSH-2.0-OpenSSH_8.0p1 Ubuntu-6build1']
 arch = ["bsd-aarch64-lsb","bsd-aarch64-msb","bsd-bfin-msb","bsd-mips64-lsb","bsd-mips64-msb",
 		"bsd-mips-lsb","bsd-mips-msb","bsd-powepc64-lsb","bsd-powepc-msb","bsd-riscv64-lsb","bsd-sparc64-msb","bsd-sparc-msb","bsd-x32-lsb","bsd-x64-lsb","linux-aarch64-lsb",
 		"linux-aarch64-msb","linux-alpha-lsb","linux-am33-lsb","linux-arc-lsb","linux-arc-msb","linux-arm-lsb","linux-arm-msb","linux-avr32-lsb","linux-bfin-lsb","linux-c6x-lsb",
@@ -99,6 +108,8 @@ arch = ["bsd-aarch64-lsb","bsd-aarch64-msb","bsd-bfin-msb","bsd-mips64-lsb","bsd
 		"linux-microblaze-msb","linux-mips64-lsb","linux-mips64-msb","linux-mips-lsb","linux-mips-msb","linux-mn10300-lsb","linux-nios-lsb","linux-nios-msb","linux-powerpc64-lsb",
 		"linux-powerpc64-msb","linux-powerpc-lsb","linux-powerpc-msb","linux-riscv64-lsb","linux-s390x-msb","linux-sh-lsb","linux-sh-msb","linux-sparc64-msb","linux-sparc-msb",
 		"linux-tilegx64-lsb","linux-tilegx64-msb","linux-tilegx-lsb","linux-tilegx-msb","linux-x64-lsb","linux-x86-lsb","linux-xtensa-msb","osx-x32-lsb","osx-x64-lsb"]
+
+#NOTE - For combining with newer OpenSSH proxying, change the below line to 'newer_ssh_ver'
 sshversion = random.choice(ssh_ver)
 user_count = random.randint(1, 3)
 users = []
@@ -329,6 +340,17 @@ def version_uname(cowrie_install_dir):
 		version_file.write(version) # Write the version name to it.
 		version_file.close()
 
+
+def proc_uptime(cowrie_install_dir):
+	print ('Adding believable /proc/uptime')
+	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/uptime"), "w")  as uptime_file: # Open the version file.
+		base_time = randint(0, 100000) + 100000
+		idle_time = base_time + randint(5000, 10000)
+		rand_uptime = "%02d.%02d %02d.%02d" %  (base_time,  randint(0, 99), idle_time, randint(0,99))
+		uptime_file.write(rand_uptime) # Write the version name to it.
+		uptime_file.close()
+
+
 # The following fuction replaces the meminfo file in  the directory cowrie/honeyfs/proc with randomised information about the memory of the simulated system.
 # Similar to the format of the default file, a large string is  generated with randomised values.
 # Most of these values use the same variable adnd have been divided  by certain integers as most of these values are proportional to each other 
@@ -416,6 +438,69 @@ def cpuinfo(cowrie_install_dir):
 		cpuinfo_file.write(cpuinfo_update)
 		cpuinfo_file.truncate()
 		cpuinfo_file.close()
+
+# The following function replaces the certain values of the dmesg file in the directory /share/cowrie/txtcmds/bin/dmesg.
+#  Values such as nr_cpus , processor speed, linux version, processor info
+def dmesg(cowrie_install_dir):
+	print ('Replacing dmesg Info.')
+	with open("{0}{1}".format(cowrie_install_dir, "/share/cowrie/txtcmds/bin/dmesg"), "r+") as dmesg_file:
+		dmesg = dmesg_file.read()
+		dmesg_file.seek(0)
+		cpu_mhz = "{0}{1}".format(processor.split("@ ")[1][:-3].replace(".", ""), "0.00")
+		no_processors = processor.split("TM) i")[1].split("-")[0]
+		dmesg_replacements = {"NR_CPUS: 8":"NR_CPUS: " + no_processors,
+							  "2133.123":cpu_mhz,
+							  "Linux version 2.6.26-2-686 (Debian 2.6.26-19lenny2) (dannf@debian.org) (gcc version 4.1.3 20080704 (prerelease) (Debian 4.1.2-25)) #1 SMP Wed Nov 4 20:45:37 UTC 2009":version,
+							  "Intel(R) Core(TM)2 Duo CPU     E8200  @ 2.66GHz stepping 08":processor}
+		substrs = sorted(dmesg_replacements, key=len, reverse=True)
+		regexp = re.compile('|'.join(map(re.escape, substrs)))
+		dmesg_update = regexp.sub(lambda match: dmesg_replacements[match.group(0)], dmesg)
+		dmesg_file.write(dmesg_update)
+		dmesg_file.truncate()
+		dmesg_file.close()
+
+# The function below propogates the command emulation script into the cowrie implementation
+def command(cowrie_install_dir):
+	print('Adding command script')
+	curr_dir = os.getcwd()
+	src_dir = curr_dir + "/command.py"
+	dest_dir = "{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/command.py")
+	shutil.copyfile(src_dir, dest_dir)
+	#Modify the init file
+	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/__init__.py"), "r+") as init_file: # Open the group file.
+		initing = init_file.read()
+		init_file.seek(0)
+		if not ("command" in initing):
+			replacements = {"\"yum\"": "\"yum\",\n    \"command\""} # Replace these strings with usernames.
+			substrs = sorted(replacements, key=len, reverse=True)
+			regexp = re.compile('|'.join(map(re.escape, substrs)))
+			init_update = regexp.sub(lambda match: replacements[match.group(0)], initing)
+			init_file.write(init_update)
+			init_file.truncate()
+			init_file.close()
+
+
+# The function below propogates the spoofed dmidecode files into the cowrie implementation, based on current processor picked
+def dmidecode(cowrie_install_dir):
+	print('Faking dmidecode message.')
+	type_processor = processor.split("Intel(R) Core(TM) ")[1].split("-")[0]
+	cmd_file = type_processor + ".txt"
+	file_dir = "/dmidecode_spoofs/"
+	curr_dir = os.getcwd()
+	src_dir = curr_dir + file_dir + cmd_file
+	dest_dir = "{0}{1}".format(cowrie_install_dir, "/share/cowrie/txtcmds/bin/dmidecode")
+	shutil.copyfile(src_dir, dest_dir)
+
+# The function below propogates the spoofed lpsci files into the cowrie implementation, based on current processor picked
+def lpsci(cowrie_install_dir):
+	print('Faking lpsci message.')
+	type_processor = processor.split("Intel(R) Core(TM) ")[1].split("-")[0]
+	cmd_file = type_processor + ".txt"
+	file_dir = "/lpsci_spoofs/"
+	curr_dir = os.getcwd()
+	src_dir = curr_dir + file_dir + cmd_file
+	dest_dir = "{0}{1}".format(cowrie_install_dir, "/share/cowrie/txtcmds/bin/lpsci")
+	shutil.copyfile(src_dir, dest_dir)
 
 # The function below replaces the  default user phil  with a selection of other usernames randomly chosen in the script. 
 # It opens the group file in the directory cowrie/honeyfs/etc and replaces the string "phil" with other usernames.
@@ -540,6 +625,15 @@ def hosts(cowrie_install_dir):
 		host_file.truncate()
 		host_file.close()
 
+# The following function below removes the /etc/motd file 
+def motd(cowrie_install_dir):
+	motd_path = "{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/motd")
+	if os.path.exists(motd_path):
+		os.remove(motd_path)
+		print ('Removed motd file')
+	else:
+		print('/etc/motd file already removed')
+
 # The function below makes changes to the  directory honeyfs/etc/hostname in which it replaces"svr04" to  any of the hostsnames in the  'hostnames' array 
 def hostname_py(cowrie_install_dir):
 	print ('Changing hostname.')
@@ -589,7 +683,7 @@ def fs_pickle(cowrie_install_dir):
 def allthethings(cowrie_install_dir):
 	try:
 		# base_py(cowrie_install_dir)
-		# free_py(cowrie_install_dir)
+		free_py(cowrie_install_dir)
 		ifconfig_py(cowrie_install_dir)
 		version_uname(cowrie_install_dir)
 		meminfo_py(cowrie_install_dir)
@@ -604,6 +698,12 @@ def allthethings(cowrie_install_dir):
 		issue(cowrie_install_dir)
 		userdb(cowrie_install_dir)
 		fs_pickle(cowrie_install_dir)
+		dmidecode(cowrie_install_dir)
+		lpsci(cowrie_install_dir)
+		proc_uptime(cowrie_install_dir)
+		motd(cowrie_install_dir)
+		dmesg(cowrie_install_dir)
+		command(cowrie_install_dir)
 	except:
 		e = sys.exc_info()[1]
 		print("\nError: {0}\nCheck file path and try again.".format(e))

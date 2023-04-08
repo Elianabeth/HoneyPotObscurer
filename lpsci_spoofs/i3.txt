@@ -1,0 +1,17 @@
+00:00.0 Host bridge [0600]: Intel Corporation Device [8086:3e1f] (rev 08)
+00:02.0 VGA compatible controller [0300]: Intel Corporation Device [8086:3e91]
+00:12.0 Signal processing controller [1180]: Intel Corporation Device [8086:a379] (rev 10)
+00:14.0 USB controller [0c03]: Intel Corporation Device [8086:a36d] (rev 10)
+00:14.2 RAM memory [0500]: Intel Corporation Device [8086:a36f] (rev 10)
+00:16.0 Communication controller [0780]: Intel Corporation Device [8086:a360] (rev 10)
+00:17.0 SATA controller [0106]: Intel Corporation Device [8086:a352] (rev 10)
+00:1b.0 PCI bridge [0604]: Intel Corporation Device [8086:a32c] (rev f0)
+00:1c.0 PCI bridge [0604]: Intel Corporation Device [8086:a33c] (rev f0)
+00:1c.5 PCI bridge [0604]: Intel Corporation Device [8086:a33d] (rev f0)
+00:1f.0 ISA bridge [0601]: Intel Corporation Device [8086:a308] (rev 10)
+00:1f.3 Audio device [0403]: Intel Corporation Device [8086:a348] (rev 10)
+00:1f.4 SMBus [0c05]: Intel Corporation Device [8086:a323] (rev 10)
+00:1f.5 Serial bus controller [0c80]: Intel Corporation Device [8086:a324] (rev 10)
+01:00.0 Non-Volatile memory controller [0108]: Device [1c5c:1327]
+02:00.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller [10ec:8168] (rev 15)
+03:00.0 Parallel controller [0701]: SUNIX Co., Ltd. Multiport serial controller [1fd4:1999]
