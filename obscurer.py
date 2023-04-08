@@ -494,13 +494,13 @@ def dmidecode(cowrie_install_dir):
 
 # The function below propogates the spoofed lspci files into the cowrie implementation, based on current processor picked
 def lspci(cowrie_install_dir):
-	print('Faking lpsci message.')
+	print('Faking lspci message.')
 	type_processor = processor.split("Intel(R) Core(TM) ")[1].split("-")[0]
 	cmd_file = type_processor + ".txt"
 	file_dir = "/lspci_spoofs/"
 	curr_dir = os.getcwd()
 	src_dir = curr_dir + file_dir + cmd_file
-	dest_dir = "{0}{1}".format(cowrie_install_dir, "/share/cowrie/txtcmds/bin/lspci")
+	dest_dir = "{0}{1}".format(cowrie_install_dir, "/share/cowrie/txtcmds/usr/bin/lspci")
 	shutil.copyfile(src_dir, dest_dir)
 
 # The function below replaces the  default user phil  with a selection of other usernames randomly chosen in the script. 
@@ -670,18 +670,23 @@ def userdb(cowrie_install_dir):
 # NOTE - has been modified due to weirdness in how this function originally worked.
 def fs_pickle(cowrie_install_dir):
 	print("Modifying fs.pickle file..")
-	prcv = subprocess.Popen(["git", "-git-dir {0}/.git restore share/cowrie/fs.pickle".format(cowrie_install_dir)],
-								stdin =subprocess.PIPE,
+	prcv = subprocess.run(["git", "-C", "{0}".format(cowrie_install_dir), "restore", "share/cowrie/fs.pickle"],
 								stdout=subprocess.PIPE,
-								stderr=subprocess.PIPE,
-								universal_newlines=True,
-								bufsize=0)
-	prcv.stdin.write("{0}/bin/fsctl {0}/share/cowrie/fs.pickle".format(cowrie_install_dir))
-	prcv.stdin.write("cp bin/dmesg bin/lspci")
-	prcv.stdin.write("cp bin/dmesg bin/dmidecode")
-	prcv.stdin.write("rm etc/motd")
-	prcv.stdin.write("rm -r /home/phil")
-	prcv.stdin.write("exit")
+								universal_newlines=True)
+	print(prcv)
+	prcv = subprocess.Popen(["{0}/bin/fsctl".format(cowrie_install_dir), "{0}/share/cowrie/fs.pickle".format(cowrie_install_dir)],
+				stdin=subprocess.PIPE,
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE,
+				universal_newlines=True,
+				bufsize=0)
+	#prcv.stdin.write("cp bin/dmesg bin/lspci\n")
+	prcv.stdin.write("cp bin/dmesg usr/bin/lspci\n")
+	prcv.stdin.write("cp bin/dmesg bin/dmidecode\n")
+	prcv.stdin.write("rm etc/motd\n")
+	prcv.stdin.write("rm -r /home/phil\n")
+	prcv.stdin.write("exit\n")
+	prcv.stdin.close()
 
 	for line in prcv.stdout:
 		print(line.strip())	
