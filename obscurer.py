@@ -11,6 +11,7 @@ from optparse import OptionParser
 import sys
 import os
 import shutil
+import subprocess
 
 SCRIPT_VERSION = "1.0.3"
 
@@ -491,15 +492,15 @@ def dmidecode(cowrie_install_dir):
 	dest_dir = "{0}{1}".format(cowrie_install_dir, "/share/cowrie/txtcmds/bin/dmidecode")
 	shutil.copyfile(src_dir, dest_dir)
 
-# The function below propogates the spoofed lpsci files into the cowrie implementation, based on current processor picked
-def lpsci(cowrie_install_dir):
+# The function below propogates the spoofed lspci files into the cowrie implementation, based on current processor picked
+def lspci(cowrie_install_dir):
 	print('Faking lpsci message.')
 	type_processor = processor.split("Intel(R) Core(TM) ")[1].split("-")[0]
 	cmd_file = type_processor + ".txt"
-	file_dir = "/lpsci_spoofs/"
+	file_dir = "/lspci_spoofs/"
 	curr_dir = os.getcwd()
 	src_dir = curr_dir + file_dir + cmd_file
-	dest_dir = "{0}{1}".format(cowrie_install_dir, "/share/cowrie/txtcmds/bin/lpsci")
+	dest_dir = "{0}{1}".format(cowrie_install_dir, "/share/cowrie/txtcmds/bin/lspci")
 	shutil.copyfile(src_dir, dest_dir)
 
 # The function below replaces the  default user phil  with a selection of other usernames randomly chosen in the script. 
@@ -665,9 +666,26 @@ def userdb(cowrie_install_dir):
 				userdb_file.write("\n{0}:x:{1}".format(user,p))
 		userdb_file.truncate()
 		userdb_file.close()
-# The following function below  checks whether or not  the fs.pickle file exist in the directory honeyfs/home.
-# If the  file does not exist then the function below creates the "home" directory inside the honeyfs and using the command 'bin/createfs -l../honeyfs -o fs.piickle' to create the pickle file.
+
+# NOTE - has been modified due to weirdness in how this function originally worked.
 def fs_pickle(cowrie_install_dir):
+	print("Modifying fs.pickle file..")
+	prcv = subprocess.Popen(["git", "-git-dir {0}/.git restore share/cowrie/fs.pickle".format(cowrie_install_dir)],
+								stdin =subprocess.PIPE,
+								stdout=subprocess.PIPE,
+								stderr=subprocess.PIPE,
+								universal_newlines=True,
+								bufsize=0)
+	prcv.stdin.write("{0}/bin/fsctl {0}/share/cowrie/fs.pickle".format(cowrie_install_dir))
+	prcv.stdin.write("cp bin/dmesg bin/lspci")
+	prcv.stdin.write("cp bin/dmesg bin/dmidecode")
+	prcv.stdin.write("rm etc/motd")
+	prcv.stdin.write("rm -r /home/phil")
+	prcv.stdin.write("exit")
+
+	for line in prcv.stdout:
+		print(line.strip())	
+	"""
 	print ('Creating filesystem.')
 	try:
 		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/home"))
@@ -678,6 +696,7 @@ def fs_pickle(cowrie_install_dir):
 	except FileNotFoundError:
 		pass
 	os.system("{0}/bin/createfs -l {0}/honeyfs -o {0}/share/cowrie/fs.pickle".format(cowrie_install_dir))
+	"""
 # The following function below  executes the installations one at a time
 # In the events of an error, it will prompt a message to check the file path and try again
 def allthethings(cowrie_install_dir):
@@ -697,13 +716,13 @@ def allthethings(cowrie_install_dir):
 		hostname_py(cowrie_install_dir)
 		issue(cowrie_install_dir)
 		userdb(cowrie_install_dir)
-		fs_pickle(cowrie_install_dir)
 		dmidecode(cowrie_install_dir)
-		lpsci(cowrie_install_dir)
+		lspci(cowrie_install_dir)
 		proc_uptime(cowrie_install_dir)
 		motd(cowrie_install_dir)
 		dmesg(cowrie_install_dir)
 		command(cowrie_install_dir)
+		fs_pickle(cowrie_install_dir)
 	except:
 		e = sys.exc_info()[1]
 		print("\nError: {0}\nCheck file path and try again.".format(e))
