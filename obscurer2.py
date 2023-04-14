@@ -101,19 +101,19 @@ arch = ["bsd-aarch64-lsb","bsd-aarch64-msb","bsd-bfin-msb","bsd-mips64-lsb","bsd
 		"linux-powerpc64-msb","linux-powerpc-lsb","linux-powerpc-msb","linux-riscv64-lsb","linux-s390x-msb","linux-sh-lsb","linux-sh-msb","linux-sparc64-msb","linux-sparc-msb",
 		"linux-tilegx64-lsb","linux-tilegx64-msb","linux-tilegx-lsb","linux-tilegx-msb","linux-x64-lsb","linux-x86-lsb","linux-xtensa-msb","osx-x32-lsb","osx-x64-lsb"]
 sshversion = random.choice(ssh_ver)
-user_count = random.randint(1, 3)
-users = []
-password = []
+user_count = 1
+users = ['user']
+password = ['user','debian','1234','123456','guest']
 service = []
 i = 0
 while i < user_count:
-	rand_user = random.choice(usernames)
-	users.append(rand_user)
-	usernames.remove(rand_user)
+#	rand_user = random.choice(usernames)
+#	users.append(rand_user)
+#	usernames.remove(rand_user)
 	service.append(random.choice(services))
-	passwd = random.choice(passwords)
-	password.append(passwd)
-	passwords.remove(passwd)
+#	passwd = random.choice(passwords)
+#	password.append(passwd)
+#	passwords.remove(passwd)
 	i = i + 1
 
 ################## boscutti939 - Getting the list of OUIs and making a MAC Address list
