@@ -112,19 +112,19 @@ arch = ["bsd-aarch64-lsb","bsd-aarch64-msb","bsd-bfin-msb","bsd-mips64-lsb","bsd
 
 #NOTE - For combining with newer OpenSSH proxying, change the below line to 'newer_ssh_ver'
 sshversion = random.choice(ssh_ver)
-user_count = random.randint(1, 3)
-users = []
-password = []
+user_count = 1
+users = ['user']
+password = ['user','debian','1234','123456','guest']
 service = []
 i = 0
 while i < user_count:
-	rand_user = random.choice(usernames)
-	users.append(rand_user)
-	usernames.remove(rand_user)
+#	rand_user = random.choice(usernames)
+#	users.append(rand_user)
+#	usernames.remove(rand_user)
 	service.append(random.choice(services))
-	passwd = random.choice(passwords)
-	password.append(passwd)
-	passwords.remove(passwd)
+#	passwd = random.choice(passwords)
+#	password.append(passwd)
+#	passwords.remove(passwd)
 	i = i + 1
 
 ################## boscutti939 - Getting the list of OUIs and making a MAC Address list
